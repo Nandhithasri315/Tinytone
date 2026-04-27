@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- New Modern Palette: Indigo & Teal -->
+    <color name="brand_primary">#6200EE</color>
+    <color name="brand_secondary">#03DAC6</color>
+    
+    <color name="deep_indigo">#311B92</color>
+    <color name="soft_purple">#9575CD</color>
+    <color name="magic_mint">#B2DFDB</color>
+    <color name="teal_accent">#009688</color>
+    
+    <color name="warm_orange">#FF8F00</color>
+    <color name="soft_rose">#F06292</color>
+
+    <!-- Text -->
+    <color name="text_title">#1A237E</color>
+    <color name="text_body">#455A64</color>
+    <color name="text_hint">#90A4AE</color>
+
+    <!-- Gradients -->
+    <color name="grad_start">#E8EAF6</color>
+    <color name="grad_center">#F3E5F5</color>
+    <color name="grad_end">#E0F2F1</color>
+</resources>

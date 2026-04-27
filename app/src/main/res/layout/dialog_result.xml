@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="340dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_dialog"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="28dp">
+
+    <TextView
+        android:id="@+id/tvResultEmoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GREAT"
+        android:textColor="#1565C0"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-rounded" />
+
+    <TextView
+        android:id="@+id/tvAccuracyPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="0%"
+        android:textColor="#1565C0"
+        android:textSize="54sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-rounded" />
+
+    <ProgressBar
+        android:id="@+id/accuracyBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="22dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="16dp"
+        android:max="100"
+        android:progress="0"
+        android:progressBackgroundTint="#E0E0E0"
+        android:progressTint="#4CAF50" />
+
+    <TextView
+        android:id="@+id/tvResultMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Great job"
+        android:textColor="#333333"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-rounded" />
+
+    <TextView
+        android:id="@+id/tvStarMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="18dp"
+        android:text="Star earned"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-rounded" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/hint_panel_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="14dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="TIP"
+            android:textColor="#2E7D32"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-rounded" />
+
+        <TextView
+            android:id="@+id/tvHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Keep practicing"
+            android:textColor="#2E7D32"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-rounded" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnAnalysis"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="#E3F2FD"
+        android:stateListAnimator="@null"
+        android:text="See details"
+        android:textColor="#1E88E5"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-rounded" />
+
+    <LinearLayout
+        android:id="@+id/analysisPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_white_card"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvHeard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-rounded" />
+
+        <TextView
+            android:id="@+id/tvVolume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-rounded" />
+
+        <TextView
+            android:id="@+id/tvDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-rounded" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnNext"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:backgroundTint="#42A5F5"
+        android:stateListAnimator="@null"
+        android:text="NEXT WORD"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-rounded" />
+
+</LinearLayout>

@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.Tinytone" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/sky_blue</item>
+        <item name="colorPrimaryVariant">@color/coral</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/sunshine</item>
+        <item name="colorOnSecondary">@color/text_dark</item>
+        <item name="android:fontFamily">sans-serif-rounded</item>
+        <item name="android:windowBackground">@drawable/sunny_bg</item>
+    </style>
+
+    <style name="Theme.Tinytone" parent="Base.Theme.Tinytone"/>
+
+    <!-- Big rounded button style -->
+    <style name="Widget.TinyTone.Button" parent="Widget.Material3.Button">
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">32dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+</resources>
