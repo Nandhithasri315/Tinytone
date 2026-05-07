@@ -11,17 +11,6 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
     private val _currentWord = MutableLiveData<WordEntity>()
     val currentWord: LiveData<WordEntity> get() = _currentWord
 
-    /**
-     * Fetch the next word to practise.
-     *
-     * Priority:
-     *  1. If a category is specified → pick from that category only.
-     *  2. Otherwise adaptive picker: 40% chance to resurface a weak word (score < 75).
-     *  3. Otherwise pick by difficulty.
-     *  4. Final fallback: any word.
-     *
-     *  The result is always different from the last shown word (when possible).
-     */
     fun fetchNextWord(
         isAdaptivePicker: Boolean,
         selectedDifficulty: String,
@@ -32,20 +21,25 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
             val lastId = _currentWord.value?.id ?: -1
             var word: WordEntity? = null
 
-            // 1. Category filter
+            // 1. Category filter - Strictly respect category if provided
             if (category.isNotBlank()) {
-                repeat(3) {   // try up to 3 times to get a different word
+                repeat(3) {
                     if (word == null || word!!.id == lastId) {
                         word = repository.getRandomWordByCategory(category, selectedDifficulty)
                     }
                 }
-                // If category+difficulty yields nothing, fall back to category alone
                 if (word == null || word!!.id == lastId) {
                     word = repository.getRandomWordByCategory(category, "")
                 }
+                
+                // If we found a word in the category, we post it and stop here.
+                if (word != null) {
+                    _currentWord.postValue(word!!)
+                    return@launch
+                }
             }
 
-            // 2. Adaptive: resurface weak words
+            // 2. Adaptive: resurface weak words (only if not in a specific category)
             if (word == null && isAdaptivePicker && Math.random() < 0.40) {
                 word = repository.getWeakWord()
                 if (word?.id == lastId) word = null

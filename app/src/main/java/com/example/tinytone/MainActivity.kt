@@ -15,18 +15,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.tinytone.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 /**
  * Word Practice screen.
- *
- * IMPORTANT mic‑access rule
- * ─────────────────────────
- * Android allows only ONE audio capture session at a time.
- * We ONLY use SpeechRecognizer here.  No AudioRecord, no MediaRecorder.
- * Waveform animation comes from onRmsChanged callbacks.
- * "Play recording" is replaced by TTS re-read so we never block the mic.
  */
 class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
@@ -41,12 +36,11 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var consecutiveStars = 0
     private var sessionStars     = 0
     private var totalWordsPlayed = 0
+    private var currentCategory  = ""
 
     private val rmsHistory = mutableListOf<Float>()
     private val candidates  = mutableListOf<String>()
     private var selectedDifficulty = "EASY"
-
-    // ── Lifecycle ────────────────────────────────────────────────────────────
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,14 +56,14 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         // Difficulty / Category
         selectedDifficulty = intent.getStringExtra("DIFFICULTY") ?: "EASY"
-        val category = intent.getStringExtra("CATEGORY") ?: ""
+        currentCategory = intent.getStringExtra("CATEGORY") ?: ""
         binding.tvCategory.text =
-            if (category.isNotEmpty()) "📂 $category" else "🎯 $selectedDifficulty"
+            if (currentCategory.isNotEmpty()) "📂 $currentCategory" else "🎯 $selectedDifficulty"
 
         tts = TextToSpeech(this, this)
         setupSpeechRecognizer()
 
-        // Stars
+        // Stars & Progress
         val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
         consecutiveStars = prefs.getInt("consecutive_stars", 0)
         totalWordsPlayed = prefs.getInt("total_words", 0)
@@ -88,7 +82,11 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 .setDuration(400).setInterpolator(OvershootInterpolator()).start()
         }
 
-        fetchNextWord()
+        // Seed words if database is empty and fetch word
+        lifecycleScope.launch {
+            if (repo.getWordCount() == 0) seedWords(db.wordDao())
+            fetchNextWord()
+        }
 
         binding.btnListen.setOnClickListener {
             soundManager.playClick()
@@ -120,17 +118,14 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
     }
 
-    // ── Word loading ─────────────────────────────────────────────────────────
-
     private fun fetchNextWord() {
         viewModel.fetchNextWord(
             isAdaptivePicker    = true,
             selectedDifficulty  = selectedDifficulty,
-            challengeWordId     = null
+            challengeWordId     = null,
+            category            = currentCategory
         )
     }
-
-    // ── SpeechRecognizer (sole mic user in this activity) ───────────────────
 
     private fun setupSpeechRecognizer() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
@@ -148,9 +143,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             override fun onBeginningOfSpeech() {}
 
             override fun onRmsChanged(rmsdB: Float) {
-                // rmsdB is typically in the range -2 .. +10 dB during speech.
-                // Map to 0..1 then scale by 1000 for the WaveformView.
-                val normalised = ((rmsdB + 2f).coerceIn(0f, 12f)) / 12f  // 0..1
+                val normalised = ((rmsdB + 2f).coerceIn(0f, 12f)) / 12f
                 val amp = normalised * 1000f
                 rmsHistory.add(amp)
                 binding.waveformView.addAmplitude(amp)
@@ -168,15 +161,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             override fun onError(error: Int) {
                 isListening = false
                 updateButtonIdle()
-                val msg = when (error) {
-                    SpeechRecognizer.ERROR_AUDIO          -> "Microphone error — try again."
-                    SpeechRecognizer.ERROR_NO_MATCH,
-                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Couldn't hear clearly — speak up!"
-                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Recognizer busy — wait a second."
-                    else -> "Missed that — try again!"
-                }
                 val target = viewModel.currentWord.value?.word ?: ""
-                val result = VoiceAnalyzer.analyze(rmsHistory, System.currentTimeMillis() - recordingStart, target, emptyList(), msg)
+                val result = VoiceAnalyzer.analyze(rmsHistory, System.currentTimeMillis() - recordingStart, target, emptyList(), "Try again!")
                 showResult(result)
             }
 
@@ -208,8 +194,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         updateButtonIdle()
     }
 
-    // ── Result handling ──────────────────────────────────────────────────────
-
     private fun processResult() {
         val duration = System.currentTimeMillis() - recordingStart
         val target   = viewModel.currentWord.value?.word ?: ""
@@ -223,17 +207,36 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
         totalWordsPlayed++
+        
+        var totalStars = prefs.getInt("total_stars", 0)
         if (result.starEarned) {
-            val stars = prefs.getInt("total_stars", 0) + 1
-            consecutiveStars++; sessionStars++
-            binding.tvScore.text = "⭐ $stars"
-            prefs.edit()
-                .putInt("total_stars", stars)
-                .putInt("consecutive_stars", consecutiveStars)
-                .putInt("total_words", totalWordsPlayed)
-                .apply()
+            totalStars++
+            consecutiveStars++
+            sessionStars++
         } else {
             consecutiveStars = 0
+        }
+        
+        binding.tvScore.text = "⭐ $totalStars"
+
+        // Update Preferences (Progress)
+        prefs.edit()
+            .putInt("total_stars", totalStars)
+            .putInt("consecutive_stars", consecutiveStars)
+            .putInt("total_words", totalWordsPlayed)
+            .apply()
+
+        // Update Badges
+        lifecycleScope.launch {
+            val db = AppDatabase.getDatabase(this@MainActivity)
+            BadgeManager.checkAndAward(
+                db.badgeDao(),
+                totalStars,
+                consecutiveStars,
+                result.accuracyPercent,
+                totalWordsPlayed,
+                sessionStars
+            )
         }
 
         startActivity(Intent(this, ResultActivity::class.java).apply {
@@ -241,11 +244,23 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             putExtra("IS_STAR",      result.starEarned)
             putExtra("TARGET_WORD",  viewModel.currentWord.value?.word ?: "")
             putExtra("SPOKEN_WORD",  result.spokenText)
-            putExtra("FILE_PATH",    "")   // no file: ResultActivity hides playback btn
         })
     }
 
-    // ── UI helpers ───────────────────────────────────────────────────────────
+    private suspend fun seedWords(dao: WordDao) {
+        val words = listOf(
+            WordEntity(word = "Lion", category = "Animals", difficulty = "EASY"),
+            WordEntity(word = "Tiger", category = "Animals", difficulty = "MEDIUM"),
+            WordEntity(word = "Elephant", category = "Animals", difficulty = "HARD"),
+            WordEntity(word = "Apple", category = "Foods", difficulty = "EASY"),
+            WordEntity(word = "Banana", category = "Foods", difficulty = "EASY"),
+            WordEntity(word = "Pizza", category = "Foods", difficulty = "MEDIUM"),
+            WordEntity(word = "Red", category = "Colors", difficulty = "EASY"),
+            WordEntity(word = "Blue", category = "Colors", difficulty = "EASY"),
+            WordEntity(word = "Yellow", category = "Colors", difficulty = "MEDIUM")
+        )
+        dao.insertAll(words)
+    }
 
     private fun updateButtonIdle() {
         binding.btnRecord.setIconResource(android.R.drawable.ic_btn_speak_now)
@@ -274,8 +289,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         android.animation.AnimatorSet().apply { playTogether(sx, sy); duration = 160; start() }
     }
 
-    // ── Permission ───────────────────────────────────────────────────────────
-
     private fun checkMicPermission(): Boolean {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED) {
@@ -285,8 +298,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
         return true
     }
-
-    // ── TTS + Lifecycle ──────────────────────────────────────────────────────
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) tts.language = Locale.US

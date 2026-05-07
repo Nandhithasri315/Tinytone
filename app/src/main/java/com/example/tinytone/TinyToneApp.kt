@@ -9,7 +9,7 @@ class TinyToneApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // Seed the database on every app start if it is empty
+        // Seed the database on app start if it is empty
         CoroutineScope(Dispatchers.IO).launch {
             val db = AppDatabase.getDatabase(this@TinyToneApp)
             val wordCount = db.wordDao().getWordCount()
@@ -40,17 +40,17 @@ class TinyToneApp : Application() {
             WordEntity(word = "bird",     category = "Animals",   difficulty = "EASY"),
             WordEntity(word = "goat",     category = "Animals",   difficulty = "EASY"),
 
-            // ─── EASY – Food ──────────────────────────────────────────────────
-            WordEntity(word = "apple",    category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "milk",     category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "egg",      category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "bread",    category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "cake",     category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "rice",     category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "juice",    category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "soup",     category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "mango",    category = "Food",      difficulty = "EASY"),
-            WordEntity(word = "corn",     category = "Food",      difficulty = "EASY"),
+            // ─── EASY – Foods (Unified to "Foods") ─────────────────────────────
+            WordEntity(word = "apple",    category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "milk",     category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "egg",      category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "bread",    category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "cake",     category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "rice",     category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "juice",    category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "soup",     category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "mango",    category = "Foods",      difficulty = "EASY"),
+            WordEntity(word = "corn",     category = "Foods",      difficulty = "EASY"),
 
             // ─── EASY – Colors ────────────────────────────────────────────────
             WordEntity(word = "red",      category = "Colors",    difficulty = "EASY"),
@@ -62,82 +62,22 @@ class TinyToneApp : Application() {
             WordEntity(word = "gold",     category = "Colors",    difficulty = "EASY"),
             WordEntity(word = "brown",    category = "Colors",    difficulty = "EASY"),
 
-            // ─── EASY – Body ──────────────────────────────────────────────────
-            WordEntity(word = "eye",      category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "ear",      category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "nose",     category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "hand",     category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "foot",     category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "lip",      category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "knee",     category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "back",     category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "arm",      category = "Body",      difficulty = "EASY"),
-            WordEntity(word = "leg",      category = "Body",      difficulty = "EASY"),
+            // ─── MEDIUM – Foods ───────────────────────────────────────────────
+            WordEntity(word = "banana",   category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "orange",   category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "potato",   category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "tomato",   category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "carrot",   category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "butter",   category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "noodles",  category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "sandwich", category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "biscuit",  category = "Foods",      difficulty = "MEDIUM"),
+            WordEntity(word = "yogurt",   category = "Foods",      difficulty = "MEDIUM"),
 
-            // ─── MEDIUM – Animals ──────────────────────────────────────────────
-            WordEntity(word = "rabbit",   category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "parrot",   category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "turtle",   category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "monkey",   category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "elephant", category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "dolphin",  category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "giraffe",  category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "penguin",  category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "leopard",  category = "Animals",   difficulty = "MEDIUM"),
-            WordEntity(word = "camel",    category = "Animals",   difficulty = "MEDIUM"),
-
-            // ─── MEDIUM – Food ────────────────────────────────────────────────
-            WordEntity(word = "banana",   category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "orange",   category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "potato",   category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "tomato",   category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "carrot",   category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "butter",   category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "noodles",  category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "sandwich", category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "biscuit",  category = "Food",      difficulty = "MEDIUM"),
-            WordEntity(word = "yogurt",   category = "Food",      difficulty = "MEDIUM"),
-
-            // ─── MEDIUM – Nature ──────────────────────────────────────────────
-            WordEntity(word = "flower",   category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "river",    category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "forest",   category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "thunder",  category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "rainbow",  category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "season",   category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "cloud",    category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "desert",   category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "island",   category = "Nature",    difficulty = "MEDIUM"),
-            WordEntity(word = "volcano",  category = "Nature",    difficulty = "MEDIUM"),
-
-            // ─── MEDIUM – School ──────────────────────────────────────────────
+            // ─── School (Misc) ────────────────────────────────────────────────
             WordEntity(word = "pencil",   category = "School",    difficulty = "MEDIUM"),
-            WordEntity(word = "notebook", category = "School",    difficulty = "MEDIUM"),
             WordEntity(word = "teacher",  category = "School",    difficulty = "MEDIUM"),
-            WordEntity(word = "student",  category = "School",    difficulty = "MEDIUM"),
-            WordEntity(word = "library",  category = "School",    difficulty = "MEDIUM"),
-            WordEntity(word = "eraser",   category = "School",    difficulty = "MEDIUM"),
-            WordEntity(word = "lesson",   category = "School",    difficulty = "MEDIUM"),
-            WordEntity(word = "science",  category = "School",    difficulty = "MEDIUM"),
-            WordEntity(word = "english",  category = "School",    difficulty = "MEDIUM"),
-            WordEntity(word = "history",  category = "School",    difficulty = "MEDIUM"),
-
-            // ─── HARD ─────────────────────────────────────────────────────────
-            WordEntity(word = "crocodile",     category = "Animals",   difficulty = "HARD"),
-            WordEntity(word = "rhinoceros",    category = "Animals",   difficulty = "HARD"),
-            WordEntity(word = "chimpanzee",    category = "Animals",   difficulty = "HARD"),
-            WordEntity(word = "hippopotamus",  category = "Animals",   difficulty = "HARD"),
-            WordEntity(word = "chameleon",     category = "Animals",   difficulty = "HARD"),
-            WordEntity(word = "archaeology",   category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "microscope",    category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "geography",     category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "encyclopedia",  category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "atmosphere",    category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "temperature",   category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "celebration",   category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "neighborhood",  category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "communication", category = "Knowledge", difficulty = "HARD"),
-            WordEntity(word = "imagination",   category = "Knowledge", difficulty = "HARD")
+            WordEntity(word = "student",  category = "School",    difficulty = "MEDIUM")
         )
 
         val BADGE_LIST = listOf(
