@@ -49,31 +49,37 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         soundManager = SoundManager(this)
 
-        // ViewModel
+        // ViewModel setup
         val db   = AppDatabase.getDatabase(this)
         val repo = AppRepository(db.wordDao(), db.badgeDao(), db.sessionDao())
         viewModel = ViewModelProvider(this, ViewModelFactory(repo))[MainViewModel::class.java]
 
-        // Difficulty / Category
+        // Difficulty and Category normalization
         selectedDifficulty = intent.getStringExtra("DIFFICULTY") ?: "EASY"
         currentCategory = intent.getStringExtra("CATEGORY") ?: ""
+
+        // Fix: Ensure "Food" vs "Foods" naming consistency
+        if (currentCategory.equals("Food", ignoreCase = true)) currentCategory = "Foods"
+
         binding.tvCategory.text =
             if (currentCategory.isNotEmpty()) "📂 $currentCategory" else "🎯 $selectedDifficulty"
 
         tts = TextToSpeech(this, this)
         setupSpeechRecognizer()
 
-        // Stars & Progress
+        // Load Stars and Progress
         val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
         consecutiveStars = prefs.getInt("consecutive_stars", 0)
         totalWordsPlayed = prefs.getInt("total_words", 0)
         binding.tvScore.text = "⭐ ${prefs.getInt("total_stars", 0)}"
 
-        // Observe word
+        // Observe word changes
         viewModel.currentWord.observe(this) { entity ->
             binding.tvTargetWord.text = entity.word.uppercase()
             binding.waveformView.clear()
             updateButtonIdle()
+            
+            // Animation for new word
             binding.tvTargetWord.alpha = 0f
             binding.tvTargetWord.scaleX = 0.5f
             binding.tvTargetWord.scaleY = 0.5f
@@ -82,9 +88,15 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 .setDuration(400).setInterpolator(OvershootInterpolator()).start()
         }
 
-        // Seed words if database is empty and fetch word
+        // Database Repair & Initial Fetch
         lifecycleScope.launch {
-            if (repo.getWordCount() == 0) seedWords(db.wordDao())
+            try {
+                // Fix any singular "Food" categories in existing data
+                db.openHelper.writableDatabase.execSQL(
+                    "UPDATE words SET category = 'Foods' WHERE category = 'Food'"
+                )
+            } catch (e: Exception) { e.printStackTrace() }
+            
             fetchNextWord()
         }
 
@@ -130,34 +142,26 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private fun setupSpeechRecognizer() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             binding.btnRecord.isEnabled = false
-            Toast.makeText(this, "Speech recognition not available on this device", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Speech recognition not available", Toast.LENGTH_LONG).show()
             return
         }
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
-
-            override fun onReadyForSpeech(params: Bundle?) {
-                isListening = true
-            }
-
+            override fun onReadyForSpeech(params: Bundle?) { isListening = true }
             override fun onBeginningOfSpeech() {}
-
             override fun onRmsChanged(rmsdB: Float) {
                 val normalised = ((rmsdB + 2f).coerceIn(0f, 12f)) / 12f
                 val amp = normalised * 1000f
                 rmsHistory.add(amp)
                 binding.waveformView.addAmplitude(amp)
             }
-
             override fun onResults(results: Bundle?) {
                 isListening = false
                 updateButtonIdle()
                 candidates.clear()
-                results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    ?.let { candidates.addAll(it) }
+                results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.let { candidates.addAll(it) }
                 processResult()
             }
-
             override fun onError(error: Int) {
                 isListening = false
                 updateButtonIdle()
@@ -165,7 +169,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 val result = VoiceAnalyzer.analyze(rmsHistory, System.currentTimeMillis() - recordingStart, target, emptyList(), "Try again!")
                 showResult(result)
             }
-
             override fun onBufferReceived(buffer: ByteArray?) = Unit
             override fun onEndOfSpeech() {}
             override fun onPartialResults(partialResults: Bundle?) = Unit
@@ -219,14 +222,14 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         
         binding.tvScore.text = "⭐ $totalStars"
 
-        // Update Preferences (Progress)
+        // Update Progress and Stars - Every attempt counts toward "total_words"
         prefs.edit()
             .putInt("total_stars", totalStars)
             .putInt("consecutive_stars", consecutiveStars)
             .putInt("total_words", totalWordsPlayed)
             .apply()
 
-        // Update Badges
+        // Award Badges
         lifecycleScope.launch {
             val db = AppDatabase.getDatabase(this@MainActivity)
             BadgeManager.checkAndAward(
@@ -247,33 +250,16 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         })
     }
 
-    private suspend fun seedWords(dao: WordDao) {
-        val words = listOf(
-            WordEntity(word = "Lion", category = "Animals", difficulty = "EASY"),
-            WordEntity(word = "Tiger", category = "Animals", difficulty = "MEDIUM"),
-            WordEntity(word = "Elephant", category = "Animals", difficulty = "HARD"),
-            WordEntity(word = "Apple", category = "Foods", difficulty = "EASY"),
-            WordEntity(word = "Banana", category = "Foods", difficulty = "EASY"),
-            WordEntity(word = "Pizza", category = "Foods", difficulty = "MEDIUM"),
-            WordEntity(word = "Red", category = "Colors", difficulty = "EASY"),
-            WordEntity(word = "Blue", category = "Colors", difficulty = "EASY"),
-            WordEntity(word = "Yellow", category = "Colors", difficulty = "MEDIUM")
-        )
-        dao.insertAll(words)
-    }
-
     private fun updateButtonIdle() {
         binding.btnRecord.setIconResource(android.R.drawable.ic_btn_speak_now)
-        binding.btnRecord.backgroundTintList =
-            ColorStateList.valueOf(ContextCompat.getColor(this, R.color.coral))
+        binding.btnRecord.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.coral))
         (binding.btnRecord.tag as? android.animation.AnimatorSet)?.cancel()
         binding.btnRecord.scaleX = 1f; binding.btnRecord.scaleY = 1f
     }
 
     private fun updateButtonListening() {
         binding.btnRecord.setIconResource(android.R.drawable.ic_menu_close_clear_cancel)
-        binding.btnRecord.backgroundTintList =
-            ColorStateList.valueOf(ContextCompat.getColor(this, R.color.error_red))
+        binding.btnRecord.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.error_red))
         val sx = android.animation.ObjectAnimator.ofFloat(binding.btnRecord, "scaleX", 1f, 1.15f, 1f)
         val sy = android.animation.ObjectAnimator.ofFloat(binding.btnRecord, "scaleY", 1f, 1.15f, 1f)
         sx.repeatCount = android.animation.ObjectAnimator.INFINITE; sx.duration = 800
@@ -290,10 +276,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun checkMicPermission(): Boolean {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.RECORD_AUDIO), 100)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 100)
             return false
         }
         return true
@@ -311,7 +295,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     override fun onDestroy() {
-        if (::tts.isInitialized)            { tts.stop(); tts.shutdown() }
+        if (::tts.isInitialized) { tts.stop(); tts.shutdown() }
         if (::speechRecognizer.isInitialized) speechRecognizer.destroy()
         soundManager.release()
         super.onDestroy()

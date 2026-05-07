@@ -14,6 +14,10 @@
     <color name="sky_blue">#00BBF9</color>
     <color name="mint_green">#00F5D4</color>
     <color name="coral_orange">#F15BB5</color>
+    
+    <!-- Modern Accents -->
+    <color name="magic_mint">#B2DFDB</color>
+    <color name="teal_accent">#009688</color>
 
     <!-- UI Backgrounds and Cards -->
     <color name="bg_surface">#F8F9FA</color>

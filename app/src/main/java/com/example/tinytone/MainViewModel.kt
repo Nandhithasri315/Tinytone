@@ -21,31 +21,36 @@ class MainViewModel(private val repository: AppRepository) : ViewModel() {
             val lastId = _currentWord.value?.id ?: -1
             var word: WordEntity? = null
 
-            // 1. Category filter - Strictly respect category if provided
+            // 1. STRICT CATEGORY FILTER
+            // If a category is selected, we MUST stay within it.
             if (category.isNotBlank()) {
+                // Try to find a word in the category matching the difficulty
                 repeat(3) {
                     if (word == null || word!!.id == lastId) {
                         word = repository.getRandomWordByCategory(category, selectedDifficulty)
                     }
                 }
+                // Fallback: If no word exists for that difficulty in this category, 
+                // get any word from the SAME category.
                 if (word == null || word!!.id == lastId) {
                     word = repository.getRandomWordByCategory(category, "")
                 }
                 
-                // If we found a word in the category, we post it and stop here.
+                // If we found a word in the category, we post it and STOP. 
+                // Do not let adaptive picker interfere.
                 if (word != null) {
                     _currentWord.postValue(word!!)
                     return@launch
                 }
             }
 
-            // 2. Adaptive: resurface weak words (only if not in a specific category)
+            // 2. Adaptive: resurface weak words (Only for "All Words" mode)
             if (word == null && isAdaptivePicker && Math.random() < 0.40) {
                 word = repository.getWeakWord()
                 if (word?.id == lastId) word = null
             }
 
-            // 3. Difficulty-based pick
+            // 3. Difficulty-based pick (Standard fallback)
             if (word == null) {
                 repeat(3) {
                     if (word == null || word!!.id == lastId) {

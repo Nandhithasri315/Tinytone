@@ -28,14 +28,21 @@
             android:tint="@color/brand_primary"
             android:contentDescription="Go Back"/>
 
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="12dp"
+            android:src="@drawable/ic_logo"
+            app:tint="@color/brand_primary" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="8dp"
             android:text="Practice"
             android:textColor="@color/text_title"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-rounded"/>
 
@@ -90,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/bg_surface"
+                app:cardBackgroundColor="@color/magic_mint"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
@@ -101,7 +108,7 @@
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="6dp"
                     android:text="🎯 All Words"
-                    android:textColor="@color/brand_primary"
+                    android:textColor="@color/teal_accent"
                     android:textSize="13sp"
                     android:textStyle="bold"/>
             </com.google.android.material.card.MaterialCardView>
@@ -117,26 +124,32 @@
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
+            <!-- AUTO-SIZING TEXT VIEW FOR LONG WORDS (Reduced max size) -->
             <TextView
                 android:id="@+id/tvTargetWord"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="12dp"
                 android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:maxLines="1"
+                app:autoSizeMaxTextSize="48sp"
+                app:autoSizeMinTextSize="20sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
                 android:text="APPLE"
                 android:textColor="@color/brand_primary"
-                android:textSize="64sp"
                 android:textStyle="bold" />
 
-            <!-- Mascot Emoji -->
-            <TextView
-                android:id="@+id/tvMascot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <!-- Mascot Icon -->
+            <ImageView
+                android:id="@+id/ivMascotIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginBottom="12dp"
-                android:text="🐘"
-                android:textSize="28sp"
-                android:alpha="0.7"/>
+                android:src="@drawable/ic_logo"
+                app:tint="@color/brand_secondary"
+                android:alpha="0.8"/>
 
             <!-- Waveform Panel -->
             <com.google.android.material.card.MaterialCardView
