@@ -1,60 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/badgeCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="24dp"
-    app:cardElevation="6dp"
+    app:cardElevation="4dp"
     app:cardBackgroundColor="#FFFFFF">
 
     <LinearLayout
+        android:id="@+id/badgeContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center"
-        android:padding="20dp">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Badge emoji -->
-        <TextView
-            android:id="@+id/tvBadgeEmoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="52sp"
-            android:layout_marginBottom="10dp"/>
+        <FrameLayout
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="12dp">
 
-        <!-- Badge title -->
+            <View
+                android:id="@+id/badgeBgCircle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_white_card"
+                android:alpha="0.2" />
+
+            <TextView
+                android:id="@+id/tvBadgeEmoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="40sp" />
+        </FrameLayout>
+
         <TextView
             android:id="@+id/tvBadgeTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#1565C0"
             android:fontFamily="sans-serif-rounded"
             android:gravity="center"
-            android:layout_marginBottom="6dp"/>
+            android:textColor="@color/brand_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <!-- Badge description -->
         <TextView
             android:id="@+id/tvBadgeDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="#757575"
+            android:alpha="0.7"
             android:fontFamily="sans-serif-rounded"
             android:gravity="center"
-            android:layout_marginBottom="10dp"/>
+            android:paddingHorizontal="4dp"
+            android:textColor="@color/text_body"
+            android:textSize="12sp" />
 
-        <!-- Badge status -->
         <TextView
             android:id="@+id/tvBadgeStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-rounded"/>
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-rounded"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:textSize="11sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -2,6 +2,7 @@ package com.example.tinytone
 
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -17,9 +18,9 @@ class ProgressActivity : AppCompatActivity() {
     private lateinit var tvTotalWords: TextView
     private lateinit var tvEarnedBadges: TextView
     private lateinit var rvBadges: RecyclerView
-    // Add these two new variables at the top
     private lateinit var tvPageTitle: TextView
-    private lateinit var statsCard: androidx.cardview.widget.CardView
+    private lateinit var statsContainer: LinearLayout // Changed from CardView to LinearLayout to fix crash
+    private lateinit var tvBadgesTitle: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +28,14 @@ class ProgressActivity : AppCompatActivity() {
 
         val tab = intent.getStringExtra("TAB") ?: "progress"
 
+        // Initialize Views
         tvTotalStars   = findViewById(R.id.tvTotalStars)
         tvTotalWords   = findViewById(R.id.tvTotalWords)
         tvEarnedBadges = findViewById(R.id.tvEarnedBadges)
         rvBadges       = findViewById(R.id.rvBadges)
+        tvPageTitle    = findViewById(R.id.tvPageTitle)
+        statsContainer = findViewById(R.id.statsCard)
+        tvBadgesTitle  = findViewById(R.id.tvBadgesTitle)
 
         db       = AppDatabase.getDatabase(this)
         badgeDao = db.badgeDao()
@@ -39,46 +44,42 @@ class ProgressActivity : AppCompatActivity() {
         val stars = prefs.getInt("total_stars", 0)
         val words = prefs.getInt("total_words", 0)
 
-        // Fix 1 — show correct content based on tab
-        tvPageTitle = findViewById(R.id.tvPageTitle)
-        statsCard   = findViewById(R.id.statsCard)
-
+        // UI Setup based on selected tab
         if (tab == "badges") {
-            // Badges tab — hide stats card, change title
-            statsCard.visibility   = View.GONE
-            tvPageTitle.text       = "My Badges 🏅"
+            statsContainer.visibility = View.GONE
+            tvPageTitle.text = "Achievements 🏆"
+            tvBadgesTitle.visibility = View.GONE
         } else {
-            // Progress tab — show stats card
-            statsCard.visibility   = View.VISIBLE
-            tvPageTitle.text       = "My Progress 📊"
-            tvTotalStars.text      = "⭐ $stars Stars Earned"
-            tvTotalWords.text      = "📚 $words Words Practiced"
+            statsContainer.visibility = View.VISIBLE
+            tvPageTitle.text = "Your Journey 🚀"
+            tvTotalStars.text = "⭐ $stars"
+            tvTotalWords.text = "📝 $words"
+            tvBadgesTitle.visibility = View.VISIBLE
         }
 
         lifecycleScope.launch {
-            // Seed badges if table is empty
-            if (badgeDao.getAllBadges().isEmpty()) {
-                BadgeManager.checkAndAward(
-                    badgeDao, stars, 0, 0, words, 0
-                )
+            // Ensure badges are initialized
+            val currentBadges = badgeDao.getAllBadges()
+            if (currentBadges.isEmpty()) {
+                BadgeManager.checkAndAward(badgeDao, stars, 0, 0, words, 0)
             }
 
-            // Fix 2 — filter out any empty/null badges before showing
             val allBadges = badgeDao.getAllBadges()
                 .filter { it.id.isNotBlank() && it.title.isNotBlank() }
-
+            
             val earnedCount = allBadges.count { it.earned }
 
             runOnUiThread {
-                if (tab == "progress") {
-                    tvEarnedBadges.text = "🏅 $earnedCount / ${allBadges.size} Badges Earned"
-                }
+                tvEarnedBadges.text = "🏅 $earnedCount"
+                
                 rvBadges.layoutManager = GridLayoutManager(this@ProgressActivity, 2)
                 rvBadges.adapter = BadgeAdapter(allBadges)
+                rvBadges.setHasFixedSize(true)
             }
         }
 
-        findViewById<androidx.appcompat.widget.AppCompatImageButton>(R.id.btnBack)
-            .setOnClickListener { finish() }
+        findViewById<View>(R.id.btnBack).setOnClickListener { 
+            onBackPressedDispatcher.onBackPressed() 
+        }
     }
 }

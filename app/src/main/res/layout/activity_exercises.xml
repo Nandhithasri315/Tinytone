@@ -1,19 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sunny_bg"
+    android:background="@drawable/bg_gradient_light"
     android:orientation="vertical"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
     android:paddingTop="24dp"
     android:paddingBottom="24dp">
 
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -23,29 +24,35 @@
             android:layout_height="48dp"
             android:background="@drawable/rounded_white_card"
             android:padding="10dp"
-            android:src="@android:drawable/ic_media_previous" />
+            android:src="@android:drawable/ic_media_previous"
+            android:tint="@color/brand_primary" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="12dp"
-            android:text="Voice Games"
-            android:textColor="#1565C0"
-            android:textSize="28sp"
+            android:layout_marginStart="14dp"
+            android:text="Word Categories"
+            android:textColor="@color/text_title"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-rounded" />
     </LinearLayout>
 
-    <androidx.cardview.widget.CardView
+    <!-- Animals Card -->
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSoft"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
         app:cardBackgroundColor="#4FC3F7"
         app:cardCornerRadius="28dp"
-        app:cardElevation="10dp">
+        app:cardElevation="10dp"
+        app:rippleColor="#33FFFFFF"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,9 +66,9 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:gravity="center"
-                android:text="SOFT"
+                android:text="🐘"
                 android:textColor="#1E88E5"
-                android:textSize="20sp"
+                android:textSize="32sp"
                 android:textStyle="bold"
                 android:background="@drawable/rounded_white_card" />
 
@@ -75,7 +82,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Speak Softly"
+                    android:text="Animals"
                     android:textColor="#FFFFFF"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -85,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Use your calm quiet voice"
+                    android:text="Learn names of animals"
                     android:textColor="#E1F5FE"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif-rounded" />
@@ -94,22 +101,27 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">"
+                android:text="›"
                 android:textColor="#FFFFFF"
-                android:textSize="28sp"
+                android:textSize="32sp"
                 android:textStyle="bold" />
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <androidx.cardview.widget.CardView
+    <!-- Foods Card -->
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardLoud"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
         app:cardBackgroundColor="#FF7043"
         app:cardCornerRadius="28dp"
-        app:cardElevation="10dp">
+        app:cardElevation="10dp"
+        app:rippleColor="#33FFFFFF"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -123,9 +135,9 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:gravity="center"
-                android:text="LOUD"
+                android:text="🍕"
                 android:textColor="#F4511E"
-                android:textSize="20sp"
+                android:textSize="32sp"
                 android:textStyle="bold"
                 android:background="@drawable/rounded_white_card" />
 
@@ -139,7 +151,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Speak Loudly"
+                    android:text="Foods"
                     android:textColor="#FFFFFF"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -149,7 +161,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Use your big outdoor voice"
+                    android:text="Yummy food words"
                     android:textColor="#FBE9E7"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif-rounded" />
@@ -158,21 +170,26 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">"
+                android:text="›"
                 android:textColor="#FFFFFF"
-                android:textSize="28sp"
+                android:textSize="32sp"
                 android:textStyle="bold" />
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <androidx.cardview.widget.CardView
+    <!-- Colors Card -->
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardPitch"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
         app:cardBackgroundColor="#7E57C2"
         app:cardCornerRadius="28dp"
-        app:cardElevation="10dp">
+        app:cardElevation="10dp"
+        app:rippleColor="#33FFFFFF"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -186,9 +203,9 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:gravity="center"
-                android:text="PITCH"
+                android:text="🎨"
                 android:textColor="#5E35B1"
-                android:textSize="18sp"
+                android:textSize="32sp"
                 android:textStyle="bold"
                 android:background="@drawable/rounded_white_card" />
 
@@ -202,7 +219,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pitch Adventure"
+                    android:text="Colors"
                     android:textColor="#FFFFFF"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -212,7 +229,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Start low and glide high"
+                    android:text="Beautiful color words"
                     android:textColor="#F3E5F5"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif-rounded" />
@@ -221,11 +238,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=">"
+                android:text="›"
                 android:textColor="#FFFFFF"
-                android:textSize="28sp"
+                android:textSize="32sp"
                 android:textStyle="bold" />
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

@@ -1,20 +1,31 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.Tinytone" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/sky_blue</item>
-        <item name="colorPrimaryVariant">@color/coral</item>
+        <item name="colorPrimary">@color/brand_primary</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/sunshine</item>
-        <item name="colorOnSecondary">@color/text_dark</item>
+        <item name="colorPrimaryContainer">@color/grad_start_light</item>
+        <item name="colorSecondary">@color/star_yellow</item>
+        <item name="colorOnSecondary">@color/deep_indigo</item>
+        <item name="colorSecondaryContainer">@color/bg_surface</item>
+        <item name="colorSurface">@color/bg_surface</item>
+        <item name="colorOnSurface">@color/text_title</item>
         <item name="android:fontFamily">sans-serif-rounded</item>
-        <item name="android:windowBackground">@drawable/sunny_bg</item>
+        <item name="android:windowBackground">@color/bg_surface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
     </style>
 
     <style name="Theme.Tinytone" parent="Base.Theme.Tinytone"/>
 
-    <!-- Big rounded button style -->
+    <!-- Premium Rounded Button -->
     <style name="Widget.TinyTone.Button" parent="Widget.Material3.Button">
         <item name="android:textStyle">bold</item>
-        <item name="cornerRadius">32dp</item>
-        <item name="android:stateListAnimator">@null</item>
+        <item name="cornerRadius">28dp</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <!-- Card Style -->
+    <style name="Widget.TinyTone.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">8dp</item>
     </style>
 </resources>

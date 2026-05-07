@@ -1,10 +1,13 @@
 package com.example.tinytone
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class BadgeAdapter(private val badges: List<BadgeEntity>) :
@@ -15,6 +18,8 @@ class BadgeAdapter(private val badges: List<BadgeEntity>) :
         val tvTitle: TextView       = view.findViewById(R.id.tvBadgeTitle)
         val tvDesc: TextView        = view.findViewById(R.id.tvBadgeDesc)
         val tvStatus: TextView      = view.findViewById(R.id.tvBadgeStatus)
+        val bgCircle: View          = view.findViewById(R.id.badgeBgCircle)
+        val card: CardView          = view.findViewById(R.id.badgeCard)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BadgeViewHolder {
@@ -25,18 +30,30 @@ class BadgeAdapter(private val badges: List<BadgeEntity>) :
 
     override fun onBindViewHolder(holder: BadgeViewHolder, position: Int) {
         val badge = badges[position]
+        val context = holder.itemView.context
+        
         holder.tvEmoji.text = badge.emoji
         holder.tvTitle.text = badge.title
         holder.tvDesc.text  = badge.description
 
         if (badge.earned) {
-            holder.tvStatus.text = "✅ Earned!"
-            holder.tvStatus.setTextColor(Color.parseColor("#4CAF50"))
-            holder.itemView.alpha = 1.0f
+            holder.tvStatus.text = "EARNED"
+            holder.tvStatus.setTextColor(Color.WHITE)
+            holder.tvStatus.setBackgroundResource(R.drawable.rounded_green_pill)
+            
+            holder.bgCircle.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E8F5E9"))
+            holder.bgCircle.alpha = 1.0f
+            holder.card.alpha = 1.0f
+            holder.card.cardElevation = 8f
         } else {
-            holder.tvStatus.text = "🔒 Locked"
+            holder.tvStatus.text = "LOCKED"
             holder.tvStatus.setTextColor(Color.parseColor("#9E9E9E"))
-            holder.itemView.alpha = 0.5f
+            holder.tvStatus.setBackgroundResource(R.drawable.rounded_gray_pill)
+            
+            holder.bgCircle.backgroundTintList = ColorStateList.valueOf(Color.LTGRAY)
+            holder.bgCircle.alpha = 0.3f
+            holder.card.alpha = 0.6f
+            holder.card.cardElevation = 2f
         }
     }
 

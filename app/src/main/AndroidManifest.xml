@@ -24,15 +24,16 @@
         android:theme="@style/Theme.Tinytone"
         tools:targetApi="31">
 
-        <!-- MenuActivity is now the HOME screen -->
+        <!-- WelcomeActivity is the LAUNCHER screen -->
         <activity
-            android:name=".MenuActivity"
+            android:name=".WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MenuActivity" />
         <activity android:name=".ExercisesActivity"/>
         <activity android:name=".ExerciseDetailActivity"/>
 
@@ -40,6 +41,15 @@
         <activity android:name=".MainActivity"/>
         <activity android:name=".ProgressActivity"/>
 
+        <!-- New Voice Practice Activities -->
+        <activity
+            android:name=".LoudnessPracticeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PitchPracticeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

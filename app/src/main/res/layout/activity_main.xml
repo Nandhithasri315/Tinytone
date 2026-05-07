@@ -1,212 +1,270 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sunny_bg"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp"
-    android:paddingTop="20dp"
-    android:paddingBottom="24dp">
+    android:background="@drawable/bg_gradient_light">
 
-    <TextView
-        android:id="@+id/tvMascot"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:gravity="center"
-        android:text="🐘"
-        android:textSize="32sp"
-        android:background="@drawable/rounded_white_card"
-        android:elevation="4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvScore"
-        android:layout_width="wrap_content"
+    <!-- Toolbar -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Stars: 0"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_dark"
-        android:background="@drawable/pill_yellow"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:elevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvMascot"
-        app:layout_constraintBottom_toBottomOf="@id/tvMascot" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="12dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Word Adventure"
-        android:textColor="@color/text_dark"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/tvScore"
-        app:layout_constraintStart_toEndOf="@id/tvMascot"
-        app:layout_constraintTop_toTopOf="@id/tvMascot" />
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/rounded_white_card"
+            android:padding="12dp"
+            android:src="@android:drawable/ic_media_previous"
+            android:tint="@color/brand_primary"/>
 
-    <TextView
-        android:id="@+id/tvSubtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Say the word to earn stars!"
-        android:textColor="@color/text_mid"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@id/tvScore"
-        app:layout_constraintStart_toEndOf="@id/tvMascot"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:text="Practice"
+            android:textColor="@color/text_title"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-rounded"/>
 
-    <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/scoreCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/star_yellow"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp">
+            <TextView
+                android:id="@+id/tvScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-rounded"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:text="⭐ 0"
+                android:textColor="@color/deep_indigo"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <!-- Word Display Card -->
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/wordCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="32dp"
-        app:cardElevation="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMascot">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="36dp"
+        app:cardElevation="16dp"
+        app:cardBackgroundColor="@color/bg_card"
+        app:strokeWidth="0dp"
+        app:layout_constraintBottom_toTopOf="@id/controls"
+        app:layout_constraintTop_toBottomOf="@id/header">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="32dp">
+            android:padding="24dp">
+
+            <!-- Category chip -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/categoryChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/bg_surface"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+                <TextView
+                    android:id="@+id/tvCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="6dp"
+                    android:text="🎯 All Words"
+                    android:textColor="@color/brand_primary"
+                    android:textSize="13sp"
+                    android:textStyle="bold"/>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your Word"
-                android:textColor="@color/text_light"
-                android:textSize="14sp"
-                android:textAllCaps="true"
-                android:letterSpacing="0.1"
+                android:alpha="0.4"
+                android:fontFamily="sans-serif-rounded"
+                android:letterSpacing="0.2"
+                android:text="SAY THIS WORD"
+                android:textColor="@color/text_title"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvTargetWord"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
+                android:layout_marginVertical="12dp"
+                android:fontFamily="sans-serif-black"
                 android:text="APPLE"
-                android:textColor="@color/sky_blue_dark"
+                android:textColor="@color/brand_primary"
                 android:textSize="64sp"
                 android:textStyle="bold" />
 
+            <!-- Mascot Emoji -->
             <TextView
+                android:id="@+id/tvMascot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Listen first, then speak clearly"
-                android:textColor="@color/text_mid"
-                android:textSize="14sp" />
+                android:layout_marginBottom="12dp"
+                android:text="🐘"
+                android:textSize="28sp"
+                android:alpha="0.7"/>
+
+            <!-- Waveform Panel -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="#F8F5FF"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#E8E0FC"
+                app:strokeWidth="1dp">
+
+                <com.example.tinytone.WaveformView
+                    android:id="@+id/waveformView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp" />
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/waveCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/wordCard">
-
-        <com.example.tinytone.WaveformView
-            android:id="@+id/waveformView"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_margin="16dp" />
-    </androidx.cardview.widget.CardView>
-
+    <!-- Bottom Controls -->
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/controls"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:padding="20dp"
+        android:paddingBottom="24dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
+        <!-- Listen Button -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnListen"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:cornerRadius="60dp"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 app:backgroundTint="@color/sky_blue"
-                android:text="HEAR"
-                android:textSize="20sp"
-                android:textStyle="bold"
+                app:cornerRadius="40dp"
                 app:icon="@android:drawable/ic_lock_silent_mode_off"
-                app:iconGravity="top"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
                 app:iconSize="32dp"
-                app:elevation="8dp" />
+                app:iconTint="@color/white"
+                app:elevation="8dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Listen"
-                android:textColor="@color/text_dark"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-rounded"
+                android:text="LISTEN"
+                android:textColor="@color/text_body"
+                android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <View android:layout_width="40dp" android:layout_height="1dp"/>
+
+        <!-- Skip Button -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSkip"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                app:backgroundTint="@color/text_hint"
+                app:cornerRadius="40dp"
+                app:icon="@android:drawable/ic_media_next"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="28dp"
+                app:iconTint="@color/white"
+                app:elevation="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-rounded"
+                android:text="SKIP"
+                android:textColor="@color/text_hint"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View android:layout_width="40dp" android:layout_height="1dp"/>
+
+        <!-- Record Button -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRecord"
                 style="@style/Widget.Material3.Button"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:cornerRadius="60dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 app:backgroundTint="@color/coral"
-                android:text="TALK"
-                android:textSize="20sp"
-                android:textStyle="bold"
+                app:cornerRadius="50dp"
                 app:icon="@android:drawable/ic_btn_speak_now"
-                app:iconGravity="top"
-                app:iconSize="32dp"
-                app:elevation="8dp" />
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="40dp"
+                app:elevation="12dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Speak"
-                android:textColor="@color/text_dark"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-rounded"
+                android:text="SPEAK"
+                android:textColor="@color/coral"
+                android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
