@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient_light">
+
+    <nl.dionsegijn.konfetti.xml.KonfettiView
+        android:id="@+id/konfettiView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingBottom="40dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/tvEmoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎉"
+                android:textSize="90sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/tvHeadline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Awesome!"
+                android:textColor="@color/brand_primary"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black"/>
+
+            <FrameLayout
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/accuracyChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:indicatorSize="180dp"
+                    app:trackThickness="16dp"
+                    app:trackColor="#E1E8EE"
+                    app:indicatorColor="#00F5D4"
+                    android:layout_gravity="center"
+                    app:trackCornerRadius="8dp" />
+
+                <TextView
+                    android:id="@+id/tvAccuracyText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100%"
+                    android:textSize="32sp"
+                    android:textColor="@color/text_title"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    android:fontFamily="sans-serif-rounded"/>
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvStarReward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⭐ +1 Star Earned!"
+                android:textColor="@color/star_yellow_dark"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:layout_marginBottom="24dp"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Compare Your Voice"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_title"
+                        android:fontFamily="sans-serif-rounded"
+                        android:layout_marginBottom="16dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <!-- Correct Word Block -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:layout_marginEnd="8dp">
+                        
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="CORRECT WORD"
+                                android:textColor="@color/text_body"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.12"/>
+
+                            <TextView
+                                android:id="@+id/tvCorrectWord"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="APPLE"
+                                android:textColor="@color/success_green"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-bold"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnPlayOriginal"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:icon="@android:drawable/ic_media_play"
+                                android:text="Listen"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/text_hint"
+                            android:alpha="0.2"/>
+
+                        <!-- User Output Block -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:layout_marginStart="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="YOU SAID"
+                                android:textColor="@color/text_body"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.12"/>
+
+                            <TextView
+                                android:id="@+id/tvSpokenWord"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="APPEL"
+                                android:textColor="@color/brand_primary"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-bold"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnPlayRecording"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:icon="@android:drawable/ic_media_play"
+                                android:text="Listen"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNext"
+                style="@style/Widget.TinyTone.Button"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="NEXT WORD"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

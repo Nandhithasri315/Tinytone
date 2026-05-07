@@ -7,85 +7,126 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.google.android.material.card.MaterialCardView
 
+import com.example.tinytone.databinding.ActivityMenuBinding
+import java.util.Calendar
+
 class MenuActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMenuBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_menu)
+        binding = ActivityMenuBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         refreshStars()
-        refreshStreak()
+        updateAndDisplayStreak()
         setupCards()
     }
 
     override fun onResume() {
         super.onResume()
         refreshStars()
-        refreshStreak()
+        updateAndDisplayStreak()
     }
 
     private fun refreshStars() {
         val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
         val stars = prefs.getInt("total_stars", 0)
-        findViewById<TextView>(R.id.tvMenuStars).text = "⭐ $stars stars earned"
+        binding.tvMenuStars.text = "⭐ $stars stars earned"
     }
 
-    private fun refreshStreak() {
+    private fun updateAndDisplayStreak() {
         val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
-        val streak = prefs.getInt("daily_streak", 0)
+        val lastVisit = prefs.getLong("last_visit", 0L)
+        var streak = prefs.getInt("daily_streak", 0)
+        
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+
+        if (lastVisit > 0) {
+            val diff = today - lastVisit
+            val oneDay = 24 * 60 * 60 * 1000L
+            streak = when {
+                diff == 0L -> streak // Same day
+                diff == oneDay -> streak + 1 // Consecutive day
+                else -> 1 // Missed a day
+            }
+        } else {
+            streak = 1
+        }
+        
+        prefs.edit().putLong("last_visit", today).putInt("daily_streak", streak).apply()
+
         val streakText = if (streak > 1) "🔥 $streak Day Streak! Keep it up!" else "🔥 Start your streak today!"
-        // Only update if the view exists in layout
-        try {
-            findViewById<TextView>(R.id.tvDailyStreak)?.text = streakText
-        } catch (e: Exception) { /* View might not exist */ }
+        binding.tvDailyStreak.text = streakText
+    }
+
+    private fun getSelectedDifficulty(): String {
+        return when (binding.toggleDifficulty.checkedButtonId) {
+            R.id.btnEasy -> "EASY"
+            R.id.btnMedium -> "MEDIUM"
+            R.id.btnHard -> "HARD"
+            else -> "EASY"
+        }
     }
 
     private fun setupCards() {
         val opts = ActivityOptionsCompat.makeCustomAnimation(
             this, android.R.anim.fade_in, android.R.anim.fade_out)
 
-        // 🎙️ Start Practice
-        findViewById<MaterialCardView>(R.id.cardPractice)?.setOnClickListener { v ->
+        binding.cardPractice.setOnClickListener { v ->
             animateCard(v) {
-                startActivity(Intent(this, MainActivity::class.java), opts.toBundle())
+                val intent = Intent(this, MainActivity::class.java).apply {
+                    putExtra("DIFFICULTY", getSelectedDifficulty())
+                }
+                startActivity(intent, opts.toBundle())
             }
         }
 
-        // 📢 Loudness Practice
-        findViewById<MaterialCardView>(R.id.cardLoudness)?.setOnClickListener { v ->
+        binding.cardLoudness.setOnClickListener { v ->
             animateCard(v) {
                 startActivity(Intent(this, LoudnessPracticeActivity::class.java), opts.toBundle())
             }
         }
 
-        // 🎵 Pitch Practice
-        findViewById<MaterialCardView>(R.id.cardPitch)?.setOnClickListener { v ->
+        binding.cardPitch.setOnClickListener { v ->
             animateCard(v) {
                 startActivity(Intent(this, PitchPracticeActivity::class.java), opts.toBundle())
             }
         }
 
-        // 📚 Word Categories
-        findViewById<MaterialCardView>(R.id.cardSettings)?.setOnClickListener { v ->
+        binding.cardSettings.setOnClickListener { v ->
             animateCard(v) {
                 startActivity(Intent(this, ExercisesActivity::class.java), opts.toBundle())
             }
         }
 
-        // 📈 Progress
-        findViewById<MaterialCardView>(R.id.cardProgress)?.setOnClickListener { v ->
+        binding.cardProgress.setOnClickListener { v ->
             animateCard(v) {
-                val intent = Intent(this, ProgressActivity::class.java)
-                intent.putExtra("TAB", "progress")
+                val intent = Intent(this, ProgressActivity::class.java).apply {
+                    putExtra("TAB", "progress")
+                }
                 startActivity(intent, opts.toBundle())
             }
         }
 
-        // 🏆 Badges
-        findViewById<MaterialCardView>(R.id.cardBadges)?.setOnClickListener { v ->
+        binding.cardProgress.setOnLongClickListener { 
+            // Launch Parent Dashboard
+            val intent = Intent(this, ParentDashboardActivity::class.java)
+            startActivity(intent, opts.toBundle())
+            true
+        }
+
+        binding.cardBadges.setOnClickListener { v ->
             animateCard(v) {
-                val intent = Intent(this, ProgressActivity::class.java)
-                intent.putExtra("TAB", "badges")
+                val intent = Intent(this, ProgressActivity::class.java).apply {
+                    putExtra("TAB", "badges")
+                }
                 startActivity(intent, opts.toBundle())
             }
         }
@@ -94,14 +135,15 @@ class MenuActivity : AppCompatActivity() {
     private fun animateCard(v: android.view.View, action: () -> Unit) {
         val scaleX = android.animation.ObjectAnimator.ofFloat(v, "scaleX", 1f, 0.95f, 1f)
         val scaleY = android.animation.ObjectAnimator.ofFloat(v, "scaleY", 1f, 0.95f, 1f)
-        val animSet = android.animation.AnimatorSet()
-        animSet.playTogether(scaleX, scaleY)
-        animSet.duration = 150
-        animSet.addListener(object : android.animation.AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: android.animation.Animator) {
-                action()
-            }
-        })
+        val animSet = android.animation.AnimatorSet().apply {
+            playTogether(scaleX, scaleY)
+            duration = 150
+            addListener(object : android.animation.AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: android.animation.Animator) {
+                    action()
+                }
+            })
+        }
         animSet.start()
     }
 }

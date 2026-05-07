@@ -1,13 +1,15 @@
 package com.example.tinytone
 
+import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class BadgeAdapter(private val badges: List<BadgeEntity>) :
@@ -30,7 +32,6 @@ class BadgeAdapter(private val badges: List<BadgeEntity>) :
 
     override fun onBindViewHolder(holder: BadgeViewHolder, position: Int) {
         val badge = badges[position]
-        val context = holder.itemView.context
         
         holder.tvEmoji.text = badge.emoji
         holder.tvTitle.text = badge.title
@@ -45,6 +46,14 @@ class BadgeAdapter(private val badges: List<BadgeEntity>) :
             holder.bgCircle.alpha = 1.0f
             holder.card.alpha = 1.0f
             holder.card.cardElevation = 8f
+            holder.tvEmoji.paint.colorFilter = null
+
+            // 3D Flip animation on click
+            holder.card.setOnClickListener {
+                val anim = ObjectAnimator.ofFloat(holder.card, "rotationY", 0f, 360f)
+                anim.duration = 800
+                anim.start()
+            }
         } else {
             holder.tvStatus.text = "LOCKED"
             holder.tvStatus.setTextColor(Color.parseColor("#9E9E9E"))
@@ -54,6 +63,17 @@ class BadgeAdapter(private val badges: List<BadgeEntity>) :
             holder.bgCircle.alpha = 0.3f
             holder.card.alpha = 0.6f
             holder.card.cardElevation = 2f
+            
+            // Grayscale emoji
+            val matrix = ColorMatrix()
+            matrix.setSaturation(0f)
+            holder.tvEmoji.paint.colorFilter = ColorMatrixColorFilter(matrix)
+
+            holder.card.setOnClickListener {
+                val anim = ObjectAnimator.ofFloat(holder.card, "rotationY", 0f, 20f, -20f, 0f)
+                anim.duration = 300
+                anim.start()
+            }
         }
     }
 

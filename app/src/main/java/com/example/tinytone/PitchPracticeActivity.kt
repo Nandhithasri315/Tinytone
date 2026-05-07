@@ -67,15 +67,13 @@ class PitchPracticeActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             val result = AudioFeaturesAnalyzer.recordAndAnalyze(3000L) { features ->
-                // Draw waveform scale. Using ZCR / something for height, just for fun visual.
-                // Alternatively, since wavefromView uses amplitude, we can map ZCR to amplitude visual.
-                val amp = (features.zcr * 2f).coerceAtMost(200f)
+                val amp = (features.rms / 10f).toFloat().coerceAtMost(200f)
                 waveformView.addAmplitude(amp)
             }
             
             isRecording = false
             updateRecordButtonIdle()
-            evaluateResult(result.zcr, result.rms)
+            evaluateResult(result.pitchHz, result.rms)
         }
     }
 
@@ -85,10 +83,9 @@ class PitchPracticeActivity : AppCompatActivity() {
         updateRecordButtonIdle()
     }
 
-    private fun evaluateResult(zcr: Int, rms: Double) {
-        if (rms < 50.0) {
-            tvStatus.text = "Too quiet to hear your pitch!"
-            // Show failure dialog
+    private fun evaluateResult(pitchHz: Int, rms: Double) {
+        if (rms < 150.0) {
+            tvStatus.text = "Too quiet to hear your pitch! Speak up!"
             showResultDialog(false, "Too quiet to hear your pitch!", 0)
             return
         }
@@ -96,15 +93,12 @@ class PitchPracticeActivity : AppCompatActivity() {
         val earnedStar: Boolean
         val hint: String
 
-        // ZCR > 800 roughly means higher frequency components (squeaks, high pitch)
-        // ZCR < 500 roughly means lower frequency (deep voice)
-        // These are very rough heuristics for fun practice apps.
         if (isTargetHigh) {
-            earnedStar = zcr > 600
-            hint = if (earnedStar) "Great! Nice high pitch!" else "Too low! Try squeaking like a mouse!"
+            earnedStar = pitchHz > 350
+            hint = if (earnedStar) "Great! Nice high pitch! (~${pitchHz}Hz)" else "Too low! Try squeaking like a mouse! (~${pitchHz}Hz)"
         } else {
-            earnedStar = zcr < 600
-            hint = if (earnedStar) "Good! That was a deep voice!" else "Too high! Try talking like a bear!"
+            earnedStar = pitchHz < 250
+            hint = if (earnedStar) "Good! That was a deep voice! (~${pitchHz}Hz)" else "Too high! Try talking like a bear! (~${pitchHz}Hz)"
         }
 
         tvStatus.text = hint
@@ -114,26 +108,21 @@ class PitchPracticeActivity : AppCompatActivity() {
     }
 
     private fun showResultDialog(earnedStar: Boolean, hint: String, accuracy: Int) {
-        val voiceResult = VoiceAnalyzer.VoiceResult(
-            averageAmplitude = 100f,
-            maxAmplitude = 100f,
-            durationMs = 3000,
-            spokenText = "Pitch Practice",
-            accuracyPercent = accuracy,
-            starEarned = earnedStar,
-            volumeLabel = if (isTargetHigh) "HIGH" else "LOW",
-            hint = hint
-        )
+        val intent = android.content.Intent(this, ResultActivity::class.java).apply {
+            putExtra("ACCURACY", accuracy)
+            putExtra("IS_STAR", earnedStar)
+            putExtra("TARGET_WORD", if (isTargetHigh) "HIGH PITCH" else "LOW PITCH")
+            putExtra("SPOKEN_WORD", "")
+            putExtra("FILE_PATH", "")
+        }
+        startActivity(intent)
 
-        ResultDialog(this, voiceResult) {
-            if (earnedStar) {
-                val db = AppDatabase.getDatabase(this)
-                val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
-                val stars = prefs.getInt("total_stars", 0) + 1
-                prefs.edit().putInt("total_stars", stars).apply()
-            }
-            setNewTarget()
-        }.show()
+        if (earnedStar) {
+            val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
+            val stars = prefs.getInt("total_stars", 0) + 1
+            prefs.edit().putInt("total_stars", stars).apply()
+        }
+        setNewTarget()
     }
 
     private fun updateRecordButtonIdle() {

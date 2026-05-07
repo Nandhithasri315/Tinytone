@@ -12,6 +12,16 @@ class WelcomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
+        val isFirstTime = prefs.getBoolean("is_first_time", true)
+        
+        if (isFirstTime) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
+        
         setContentView(R.layout.activity_welcome)
 
         val tvGreeting = findViewById<TextView>(R.id.tvGreeting)
@@ -22,7 +32,6 @@ class WelcomeActivity : AppCompatActivity() {
         val tvWelcomeWords = findViewById<TextView>(R.id.tvWelcomeWords)
 
         // Load stats
-        val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
         val stars = prefs.getInt("total_stars", 0)
         val words = prefs.getInt("total_words", 0)
         tvWelcomeStars.text = "⭐ $stars"

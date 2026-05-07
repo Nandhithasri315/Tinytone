@@ -73,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/brand_primary"
                 app:cardCornerRadius="28dp"
                 app:cardElevation="10dp"
@@ -118,8 +118,53 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Difficulty Picker -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Difficulty"
+                android:textColor="@color/text_body"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleDifficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:checkedButton="@id/btnEasy">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEasy"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="EASY" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMedium"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="MEDIUM" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnHard"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="HARD" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
             <!-- Section label -->
             <TextView
+                android:id="@+id/tvSectionLabelQuickActions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Quick Actions"

@@ -15,6 +15,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".TinyToneApp"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -40,6 +41,9 @@
         <!-- MainActivity no longer the launcher -->
         <activity android:name=".MainActivity"/>
         <activity android:name=".ProgressActivity"/>
+        <activity android:name=".ParentDashboardActivity"/>
+        <activity android:name=".ResultActivity"/>
+        <activity android:name=".OnboardingActivity"/>
 
         <!-- New Voice Practice Activities -->
         <activity

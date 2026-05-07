@@ -25,7 +25,8 @@
             android:background="@drawable/rounded_white_card"
             android:padding="12dp"
             android:src="@android:drawable/ic_media_previous"
-            android:tint="@color/brand_primary"/>
+            android:tint="@color/brand_primary"
+            android:contentDescription="Go Back"/>
 
         <TextView
             android:layout_width="0dp"
@@ -56,7 +57,8 @@
                 android:text="⭐ 0"
                 android:textColor="@color/deep_indigo"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:contentDescription="Current Stars"/>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
@@ -151,7 +153,8 @@
                     android:id="@+id/waveformView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="8dp" />
+                    android:layout_margin="8dp"
+                    android:contentDescription="Voice visualization"/>
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
@@ -188,7 +191,8 @@
                 app:iconPadding="0dp"
                 app:iconSize="32dp"
                 app:iconTint="@color/white"
-                app:elevation="8dp"/>
+                app:elevation="8dp"
+                android:contentDescription="Listen to the word"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -222,7 +226,8 @@
                 app:iconPadding="0dp"
                 app:iconSize="28dp"
                 app:iconTint="@color/white"
-                app:elevation="4dp"/>
+                app:elevation="4dp"
+                android:contentDescription="Skip this word"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -255,7 +260,8 @@
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
                 app:iconSize="40dp"
-                app:elevation="12dp"/>
+                app:elevation="12dp"
+                android:contentDescription="Hold to Speak"/>
 
             <TextView
                 android:layout_width="wrap_content"

@@ -57,10 +57,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Now Practice Speaking:"
-                android:textColor="@color/text_light"
-                android:textSize="14sp"
+                android:text="NOW PRACTICE SPEAKING:"
+                android:textColor="@color/text_body"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                android:letterSpacing="0.1"
                 android:textAllCaps="true"/>
 
             <TextView
@@ -73,6 +74,23 @@
                 android:textSize="48sp"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-black"/>
+
+            <!-- TEXT PROMPT: what to say -->
+            <TextView
+                android:id="@+id/tvPrompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Roar like a LION!"
+                android:textColor="@color/text_title"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:fontFamily="sans-serif-rounded"
+                android:background="@drawable/rounded_white_card"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"/>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

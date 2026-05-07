@@ -20,7 +20,7 @@ object AudioFeaturesAnalyzer {
 
     data class AudioFeatures(
         val rms: Double,
-        val zcr: Int
+        val pitchHz: Int
     )
 
     @SuppressLint("MissingPermission")
@@ -47,6 +47,7 @@ object AudioFeaturesAnalyzer {
         
         var totalRms = 0.0
         var totalZcr = 0
+        var nonSilentReadCount = 0
         var readCount = 0
 
         while (isRecording && (System.currentTimeMillis() - startTime) < durationMs) {
@@ -67,17 +68,22 @@ object AudioFeaturesAnalyzer {
                     }
                 }
                 
-                val currentRms = sqrt(sumSquares / numRead)
-                // Normalize ZCR so it approximates a frequency over a second scale or just per buffer
-                // The buffer represents (numRead / SAMPLE_RATE) seconds.
-                val currentZcr = zeroCrossings
+                val currentRms = kotlin.math.sqrt(sumSquares / numRead)
                 
                 totalRms += currentRms
-                totalZcr += currentZcr
                 readCount++
+                if (currentRms > 150.0) {
+                    totalZcr += zeroCrossings
+                    nonSilentReadCount++
+                }
+                
+                val currentPitchHz = if (currentRms > 150.0) {
+                    val durationSec = numRead.toDouble() / SAMPLE_RATE
+                    ((zeroCrossings / durationSec) / 2.0).toInt()
+                } else 0
                 
                 withContext(Dispatchers.Main) {
-                    onProgress(AudioFeatures(currentRms, currentZcr))
+                    onProgress(AudioFeatures(currentRms, currentPitchHz))
                 }
             }
         }
@@ -85,8 +91,12 @@ object AudioFeaturesAnalyzer {
         stopRecording()
 
         val avgRms = if (readCount > 0) totalRms / readCount else 0.0
-        // Total ZCR over the entire duration gives us an estimate of pitch
-        AudioFeatures(avgRms, totalZcr)
+        val nonSilentSeconds = (nonSilentReadCount * buffer.size).toDouble() / SAMPLE_RATE
+        val estimatedPitchHz = if (nonSilentSeconds > 0) {
+            (totalZcr / nonSilentSeconds) / 2.0
+        } else 0.0
+        
+        AudioFeatures(avgRms, estimatedPitchHz.toInt())
     }
 
     fun stopRecording() {

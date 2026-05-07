@@ -168,6 +168,44 @@
 
             </LinearLayout>
 
+            <!-- Chart Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/chartCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Weekly Practice Time"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/text_title"
+                        android:layout_marginBottom="12dp"
+                        android:fontFamily="sans-serif-rounded"/>
+
+                    <LinearLayout
+                        android:id="@+id/weeklyBarContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:orientation="horizontal"
+                        android:gravity="bottom"
+                        android:baselineAligned="false"
+                        android:paddingTop="16dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Section Title -->
             <TextView
                 android:id="@+id/tvBadgesTitle"

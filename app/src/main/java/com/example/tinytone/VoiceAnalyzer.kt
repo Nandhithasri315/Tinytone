@@ -1,4 +1,4 @@
-﻿package com.example.tinytone
+package com.example.tinytone
 
 object VoiceAnalyzer {
 
@@ -24,6 +24,10 @@ object VoiceAnalyzer {
         val avg = if (amplitudes.isEmpty()) 0f else amplitudes.average().toFloat()
         val max = amplitudes.maxOrNull() ?: 0f
 
+        // SpeechRecognizer onRmsChanged gives values typically in -2..10 dB
+        // After our transform (rmsdB + 10f).coerceAtLeast(0f) * 85f
+        // values cluster around  0-1700f  (silence ≈ 0, speech ≈ 500-1200)
+        // We pick the best SPOKEN candidate by pronunciation similarity
         val best = candidates
             .filter { it.isNotBlank() }
             .maxByOrNull { PronunciationHelper.similarityScore(targetWord, it) }
@@ -35,18 +39,19 @@ object VoiceAnalyzer {
             (PronunciationHelper.similarityScore(targetWord, best) * 100).toInt()
         }
 
-        val starEarned = accuracy >= 75 && durationMs >= 500 && avg >= 90f
+        // Star: accuracy ≥ 75%, duration ≥ 200ms, some sound was heard (avg > 10f)
+        val starEarned = accuracy >= 75 && durationMs >= 200 && avg > 10f
 
         val volumeLabel = when {
-            avg < 90f -> "Too quiet"
-            avg > 1800f -> "Very loud"
-            else -> "Good speaking voice"
+            avg < 50f  -> "Too quiet"
+            avg > 1500f -> "Very loud"
+            else       -> "Good speaking voice"
         }
 
         val defaultHint = when {
-            best.isBlank() && avg < 60f -> "Move a little closer and say the word in a clear voice."
-            best.isBlank() -> "We heard your voice, but not the word clearly. Try once more."
-            else -> PronunciationHelper.hint(targetWord, best)
+            best.isBlank() && avg < 30f -> "Move a little closer and say the word in a clear voice."
+            best.isBlank()              -> "We heard your voice, but not the word clearly. Try once more."
+            else                        -> PronunciationHelper.hint(targetWord, best)
         }
 
         return VoiceResult(
