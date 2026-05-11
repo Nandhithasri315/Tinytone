@@ -9,6 +9,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.animation.OvershootInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -71,10 +72,12 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
         consecutiveStars = prefs.getInt("consecutive_stars", 0)
         totalWordsPlayed = prefs.getInt("total_words", 0)
-        binding.tvScore.text = "⭐ ${prefs.getInt("total_stars", 0)}"
+        val currentStars = prefs.getInt("total_stars", 0)
+        binding.tvScore.text = "⭐ $currentStars"
 
         // Observe word changes
         viewModel.currentWord.observe(this) { entity ->
+            if (entity == null) return@observe
             binding.tvTargetWord.text = entity.word.uppercase()
             binding.waveformView.clear()
             updateButtonIdle()
@@ -88,7 +91,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 .setDuration(400).setInterpolator(OvershootInterpolator()).start()
         }
 
-        // Database Repair & Initial Fetch
+        // Database Repair
         lifecycleScope.launch {
             try {
                 // Fix any singular "Food" categories in existing data
@@ -97,7 +100,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 )
             } catch (e: Exception) { e.printStackTrace() }
             
-            fetchNextWord()
+            // Note: fetchNextWord is handled in onResume to avoid double calls on startup
         }
 
         binding.btnListen.setOnClickListener {
@@ -131,6 +134,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun fetchNextWord() {
+        Log.d("TinyToneDebug", "Fetching word: Cat=$currentCategory, Diff=$selectedDifficulty")
         viewModel.fetchNextWord(
             isAdaptivePicker    = true,
             selectedDifficulty  = selectedDifficulty,
@@ -147,11 +151,17 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) { isListening = true }
-            override fun onBeginningOfSpeech() {}
+            override fun onReadyForSpeech(params: Bundle?) { 
+                isListening = true 
+                Log.d("TinyToneDebug", "Recognizer: Ready")
+            }
+            override fun onBeginningOfSpeech() {
+                Log.d("TinyToneDebug", "Recognizer: Beginning of speech")
+            }
             override fun onRmsChanged(rmsdB: Float) {
-                val normalised = ((rmsdB + 2f).coerceIn(0f, 12f)) / 12f
-                val amp = normalised * 1000f
+                // Improved transformation: maps typical -2..10dB to approx 0..1700 range
+                // Silence ≈ 0, Speech ≈ 500-1200, Loud ≈ 1500+
+                val amp = ((rmsdB + 2f).coerceAtLeast(0f) * 140f)
                 rmsHistory.add(amp)
                 binding.waveformView.addAmplitude(amp)
             }
@@ -159,18 +169,44 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 isListening = false
                 updateButtonIdle()
                 candidates.clear()
-                results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.let { candidates.addAll(it) }
+                val res = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                res?.let { 
+                    candidates.addAll(it)
+                    Log.d("TinyToneDebug", "Recognizer Results: $it")
+                }
                 processResult()
             }
             override fun onError(error: Int) {
                 isListening = false
                 updateButtonIdle()
+                val errorMsg = when(error) {
+                    SpeechRecognizer.ERROR_AUDIO -> "Audio error"
+                    SpeechRecognizer.ERROR_CLIENT -> "Client error"
+                    SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Permissions error"
+                    SpeechRecognizer.ERROR_NETWORK -> "Network error"
+                    SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Network timeout"
+                    SpeechRecognizer.ERROR_NO_MATCH -> "No speech heard"
+                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Busy"
+                    SpeechRecognizer.ERROR_SERVER -> "Server error"
+                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Timeout"
+                    else -> "Error ($error)"
+                }
+                Log.e("TinyToneDebug", "Recognizer Error: $errorMsg")
+                
                 val target = viewModel.currentWord.value?.word ?: ""
-                val result = VoiceAnalyzer.analyze(rmsHistory, System.currentTimeMillis() - recordingStart, target, emptyList(), "Try again!")
+                val result = VoiceAnalyzer.analyze(
+                    rmsHistory, 
+                    System.currentTimeMillis() - recordingStart, 
+                    target, 
+                    emptyList(), 
+                    "Try again! ($errorMsg)"
+                )
                 showResult(result)
             }
             override fun onBufferReceived(buffer: ByteArray?) = Unit
-            override fun onEndOfSpeech() {}
+            override fun onEndOfSpeech() {
+                Log.d("TinyToneDebug", "Recognizer: End of speech")
+            }
             override fun onPartialResults(partialResults: Bundle?) = Unit
             override fun onEvent(eventType: Int, params: Bundle?) = Unit
         })
@@ -189,6 +225,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)
         }
         speechRecognizer.startListening(intent)
+        Log.d("TinyToneDebug", "Recognizer: Started Listening")
     }
 
     private fun stopListening() {
@@ -201,6 +238,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val duration = System.currentTimeMillis() - recordingStart
         val target   = viewModel.currentWord.value?.word ?: ""
         val result   = VoiceAnalyzer.analyze(rmsHistory, duration, target, candidates)
+        Log.d("TinyToneDebug", "Analysis: Acc=${result.accuracyPercent}%, Spoken=${result.spokenText}")
         showResult(result)
     }
 
@@ -222,7 +260,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         
         binding.tvScore.text = "⭐ $totalStars"
 
-        // Update Progress and Stars - Every attempt counts toward "total_words"
+        // Update Progress and Stars
         prefs.edit()
             .putInt("total_stars", totalStars)
             .putInt("consecutive_stars", consecutiveStars)
@@ -290,7 +328,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     override fun onResume() {
         super.onResume()
         val prefs = getSharedPreferences("TinyTone", MODE_PRIVATE)
-        binding.tvScore.text = "⭐ ${prefs.getInt("total_stars", 0)}"
+        val totalStars = prefs.getInt("total_stars", 0)
+        binding.tvScore.text = "⭐ $totalStars"
         fetchNextWord()
     }
 
