@@ -1,3 +1,4 @@
+
 # TinyTone
 
 TinyTone is an Android application designed to help children improve pronunciation, speech clarity, and voice modulation through interactive speech exercises. The application provides pronunciation practice, real-time feedback, progress tracking, and achievement-based motivation in a completely offline environment.
@@ -43,7 +44,7 @@ The application follows the MVC (Model-View-Controller) architecture.
 
 <img width="238" height="422" alt="image" src="https://github.com/user-attachments/assets/337761d4-543f-4f36-864d-ef2be8eff083" />
 <img width="191" height="413" alt="image" src="https://github.com/user-attachments/assets/8e46035e-20b8-490b-abea-d52685675373" />
-
+<img width="238" height="422" alt="PHOTO-2026-06-15-15-23-27" src="https://github.com/user-attachments/assets/bc8f8280-aca3-4730-985c-d8a18d57d4f9" />
 
 ### Pronunciation Practice
 
